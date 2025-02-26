@@ -3,16 +3,24 @@ import { CompositeScreenProps } from "@react-navigation/native"
 import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
-import { HomeScreen, BookingScreen, CoachScreen } from "../screens"
+import {
+  HomeScreen,
+  BookingScreen,
+  CoachScreen,
+  DemoDebugScreen,
+  DemoCommunityScreen,
+} from "../screens"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { DemoPodcastListScreen } from "@/screens/DemoPodcastListScreen"
+import { translate } from "@/i18n"
 
 export type DemoTabParamList = {
-  // DemoCommunity: undefined
-  // DemoShowroom: { queryIndex?: string; itemIndex?: string }
-  // DemoDebug: undefined
-  // DemoPodcastList: undefined
+  DemoCommunity: undefined
+  DemoShowroom: { queryIndex?: string; itemIndex?: string }
+  DemoDebug: undefined
+  DemoPodcastList: undefined
   Home: undefined
   Booking: undefined
   Coach: undefined
@@ -62,7 +70,7 @@ export function DemoNavigator() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="home" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
@@ -73,7 +81,7 @@ export function DemoNavigator() {
         options={{
           tabBarLabel: "Bookings",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="check" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="booking" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
@@ -84,7 +92,7 @@ export function DemoNavigator() {
         options={{
           tabBarLabel: "Coach",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="menu" color={focused ? colors.tint : colors.tintInactive} size={30} />
+            <Icon icon="coach" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
       />
@@ -98,7 +106,7 @@ export function DemoNavigator() {
             <Icon icon="community" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="DemoPodcastList"
@@ -112,7 +120,7 @@ export function DemoNavigator() {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="DemoDebug"
         component={DemoDebugScreen}
         options={{
@@ -127,8 +135,8 @@ export function DemoNavigator() {
 }
 
 const $tabBar: ThemedStyle<ViewStyle> = ({ colors }) => ({
-  backgroundColor: colors.background,
-  borderTopColor: colors.transparent,
+  backgroundColor: colors.palette.backgroundTab,
+  borderTopColor: colors.palette.neutral300,
 })
 
 const $tabBarItem: ThemedStyle<ViewStyle> = ({ spacing }) => ({

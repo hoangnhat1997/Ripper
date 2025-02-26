@@ -178,7 +178,7 @@ export function Button(props: ButtonProps) {
 
 const $baseViewStyle: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   minHeight: 56,
-  borderRadius: 4,
+  borderRadius: 10,
   justifyContent: "center",
   alignItems: "center",
   paddingVertical: spacing.sm,
@@ -223,7 +223,7 @@ const $viewPresets: Record<Presets, ThemedStyleArray<ViewStyle>> = {
   reversed: [
     $styles.row,
     $baseViewStyle,
-    ({ colors }) => ({ backgroundColor: colors.palette.neutral800 }),
+    ({ colors }) => ({ backgroundColor: colors.palette.ripper }),
   ],
 }
 

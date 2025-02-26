@@ -7,14 +7,15 @@ import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+interface SignUpScreenProps extends AppStackScreenProps<"SignUp"> {}
 
 const logoMobile = require("../../assets/images/logo-mobile.png")
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScreen(_props) {
   const authPasswordInput = useRef<TextInput>(null)
 
   const [authPassword, setAuthPassword] = useState("")
+  const [authFullName, setAuthFullName] = useState("")
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
@@ -29,26 +30,28 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const { navigation } = _props
 
-  function goSignUp() {
-    navigation.navigate("SignUp")
+  function goLogin() {
+    navigation.navigate("Login")
   }
 
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
+    setAuthFullName("")
+    setAuthEmail("")
+    setAuthPassword("")
 
     // Return a "cleanup" function that React will run when the component unmounts
     return () => {
       setAuthPassword("")
       setAuthEmail("")
+      setAuthFullName("")
     }
   }, [setAuthEmail])
 
   const error = isSubmitted ? validationError : ""
 
-  function login() {
+  function signup() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
 
@@ -87,9 +90,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       safeAreaEdges={["top", "bottom"]}
     >
       <Image source={logoMobile} style={themed($logo)} />
-      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={themed($logIn)} />
+
+      <Text text="Sign Up" preset="heading" style={themed($logIn)} />
       <Text
-        text="Welcome back! Let’s get you set up on the app."
+        text="Welcome! Let’s create your account."
         preset="subheading"
         weight="normal"
         style={themed($enterDetails)}
@@ -99,6 +103,18 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       )}
 
       <TextField
+        value={authFullName}
+        onChangeText={setAuthFullName}
+        containerStyle={themed($textField)}
+        autoCapitalize="none"
+        autoCorrect={false}
+        labelTx="signUpScreen:fullNameLabel"
+        placeholderTx="signUpScreen:fullNamePlaceholder"
+        helper={error}
+        status={error ? "error" : undefined}
+      />
+
+      <TextField
         value={authEmail}
         onChangeText={setAuthEmail}
         containerStyle={themed($textField)}
@@ -106,8 +122,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoComplete="email"
         autoCorrect={false}
         keyboardType="email-address"
-        labelTx="loginScreen:emailFieldLabel"
-        placeholderTx="loginScreen:emailFieldPlaceholder"
+        labelTx="signUpScreen:emailFieldLabel"
+        placeholderTx="signUpScreen:emailFieldPlaceholder"
         helper={error}
         status={error ? "error" : undefined}
         onSubmitEditing={() => authPasswordInput.current?.focus()}
@@ -122,18 +138,18 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         autoComplete="password"
         autoCorrect={false}
         secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen:passwordFieldLabel"
-        placeholderTx="loginScreen:passwordFieldPlaceholder"
-        onSubmitEditing={login}
+        labelTx="signUpScreen:passwordFieldLabel"
+        placeholderTx="signUpScreen:passwordFieldPlaceholder"
+        onSubmitEditing={signup}
         RightAccessory={PasswordRightAccessory}
       />
 
       <Button
         testID="login-button"
-        text="Log In"
+        text="Sign Up"
         style={themed($tapButton)}
         preset="reversed"
-        onPress={login}
+        onPress={signup}
       />
 
       <Text style={themed($textSub)} size="xs">
@@ -149,10 +165,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       </Text>
 
       <Text style={themed($textContainerSub)} size="md" weight="bold">
-        Don’t have an account?{" "}
-        <TouchableOpacity style={themed($containerSignUp)} onPress={goSignUp}>
+        Already have an account?{" "}
+        <TouchableOpacity style={themed($containerSignUp)} onPress={goLogin}>
           <Text style={themed($textSignUp)} size="lg" weight="bold">
-            Sign Up
+            Log In
           </Text>
         </TouchableOpacity>
       </Text>
