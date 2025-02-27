@@ -1,11 +1,30 @@
-import { FC } from "react"
+import { FC, useRef, useState, useMemo, useCallback, useEffect } from "react"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
-import { TextStyle, TouchableOpacity, View, ViewStyle, Image, ImageStyle } from "react-native"
-import type { ThemedStyle } from "@/theme"
-import { Icon, Screen, Text } from "../components"
+import {
+  TextStyle,
+  View,
+  ViewStyle,
+  Image,
+  ImageStyle,
+  FlatList,
+  TouchableOpacity,
+} from "react-native"
+import { Icon, Screen, Text, Button } from "../components"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { useStores } from "../models"
-import { FlatList } from "react-native-gesture-handler"
+import { type ThemedStyle } from "@/theme"
+import { activities } from "../../test/mockFile"
+import BottomSheet, { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet"
+import DateTimePicker from "@react-native-community/datetimepicker"
+import { use } from "i18next"
+
+interface activitiesProps {
+  id: string
+  title: string
+  price: string
+  image: string
+  icon: string
+}
 
 export const HomeScreen: FC<DemoTabScreenProps<"Home">> = function DemoCommunityScreen(_props) {
   const { themed } = useAppTheme()
@@ -14,45 +33,81 @@ export const HomeScreen: FC<DemoTabScreenProps<"Home">> = function DemoCommunity
     authenticationStore: { logout },
   } = useStores()
 
-  const activities = [
-    {
-      id: "1",
-      title: "Yoga",
-      price: "USD 50/h",
-      image: "https://source.unsplash.com/600x400/?yoga",
-      icon: "🧘‍♀️",
-    },
-    {
-      id: "2",
-      title: "Acrobatics",
-      price: "USD 26/h",
-      image: "https://source.unsplash.com/600x400/?acrobatics",
-      icon: "🤸‍♂️",
-    },
-    {
-      id: "3",
-      title: "Archery",
-      price: "USD 36/h",
-      image: "https://source.unsplash.com/600x400/?archery",
-      icon: "🏹",
-    },
-    {
-      id: "4",
-      title: "Dance",
-      price: "MYR 20/h",
-      image: "https://source.unsplash.com/600x400/?dance",
-      icon: "💃",
-    },
-  ]
+  const bottomSheetRef = useRef<BottomSheet>(null)
+  const dateSheetRef = useRef<BottomSheet>(null)
+  const hoursSheetRef = useRef<BottomSheet>(null)
+  const createBookingSheetRef = useRef<BottomSheet>(null)
 
-  const ActivityCard = ({ item }: any) => (
+  useEffect(() => {
+    bottomSheetRef.current?.close()
+    dateSheetRef.current?.close()
+    hoursSheetRef.current?.close()
+    createBookingSheetRef.current?.close()
+  }, [])
+
+  const snapPoints = useMemo(() => ["25%", "40%"], [])
+  const [selectedItem, setSelectedItem] = useState<activitiesProps>({} as activitiesProps)
+  const [date, setDate] = useState(new Date())
+
+  const handleOpenBottomSheet = useCallback((item: (typeof activities)[0]) => {
+    setSelectedItem(item)
+
+    bottomSheetRef.current?.expand()
+  }, [])
+
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index)
+  }, [])
+
+  const onDateChange = (event: any, selectedDate: Date | undefined) => {
+    const currentDate = selectedDate || date
+    console.log("onDateChange", currentDate)
+
+    setDate(currentDate)
+  }
+
+  const bookingClick = () => {
+    bottomSheetRef.current?.close()
+    dateSheetRef.current?.expand()
+  }
+
+  const dateClick = () => {
+    dateSheetRef.current?.close()
+    hoursSheetRef.current?.expand()
+  }
+
+  const hoursClick = () => {
+    hoursSheetRef.current?.close()
+    createBookingSheetRef.current?.expand()
+  }
+
+  const createBooking = () => {
+    createBookingSheetRef.current?.close()
+    console.log("createBooking")
+  }
+
+  const ActivityCard = ({ id, title, price, image, icon }: activitiesProps) => (
     <View style={themed($card)}>
-      <Image source={{ uri: item.image }} style={themed($image)} />
-      <View style={themed($overlay)}>
-        <Text style={themed($icon)}>{item.icon} </Text>
-        <Text style={themed($titleImage)}>{item.title}</Text>
-        <Text style={themed($price)}>{item.price}</Text>
-      </View>
+      <TouchableOpacity
+        onPress={() =>
+          handleOpenBottomSheet({
+            id,
+            title,
+            price,
+            image,
+            icon,
+          })
+        }
+      >
+        <Image source={{ uri: image }} style={themed($image)} />
+        <View style={themed($overlay)}>
+          <View style={themed($titleImageContainer)}>
+            <Icon icon={icon} size={24} color="white" />
+            <Text style={themed($titleImage)} text={title} />
+          </View>
+          <Text style={themed($price)} text={price} />
+        </View>
+      </TouchableOpacity>
     </View>
   )
 
@@ -69,20 +124,127 @@ export const HomeScreen: FC<DemoTabScreenProps<"Home">> = function DemoCommunity
         </TouchableOpacity>
       </View>
       <View style={themed($divider)}></View>
-      <FlatList
-        data={activities}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ActivityCard item={item} />}
-      />
-
-      {/* <Text
-        style={themed($contentContainer)}
-        text="There are no programs yet.
+      {activities.length > 0 ? (
+        <FlatList
+          data={activities}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <ActivityCard {...item} />}
+          contentContainerStyle={themed($contentContainer)}
+        />
+      ) : (
+        <Text
+          style={themed($emptyContent)}
+          text="There are no programs yet.
 Be the first coach to create one!"
-      /> */}
+        />
+      )}
+      <BottomSheet
+        enablePanDownToClose
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        index={-1}
+      >
+        <BottomSheetView>
+          <View style={themed($bottomSheetContent)}>
+            <View style={themed($bottomSheetHeader)}>
+              <Icon icon={selectedItem.icon} size={48} color="orange" />
+              <View style={themed($bottomSheetName)}>
+                <Text>{selectedItem.title}</Text>
+                <Text>Ayah Green</Text>
+              </View>
+            </View>
+            <Text>
+              Transform your body and mind with our 90-minute Bikram Yoga session, featuring 26
+              postures and breathing exercises. Join us to enhance strength, flexibility, and
+              clarity while cultivating balance and vitality!
+            </Text>
+          </View>
+
+          <View style={themed($dividerBottom)}></View>
+          <View style={themed($bottomSheetButton)}>
+            <Text>Hourly Rate</Text>
+            <Text size="xl" weight="bold">
+              {selectedItem.price}
+            </Text>
+            <Button
+              text="Booking"
+              style={themed($tapButton)}
+              preset="reversed"
+              onPress={bookingClick}
+            />
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+      <BottomSheet
+        enablePanDownToClose
+        ref={dateSheetRef}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        index={-1}
+      >
+        <BottomSheetView>
+          <View>
+            <Text preset="subheading" style={themed($headerTime)}>
+              Select Day
+            </Text>
+          </View>
+          <DateTimePicker value={date} mode="datetime" display="inline" onChange={onDateChange} />
+          <View style={themed($dividerBottom)}></View>
+          <View style={themed($bottomSheetButton)}>
+            <Button text="Next" style={themed($tapButton)} preset="reversed" onPress={dateClick} />
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+      <BottomSheet
+        enablePanDownToClose
+        ref={hoursSheetRef}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        index={-1}
+      >
+        <BottomSheetView>
+          <View>
+            <Text preset="subheading" style={themed($headerTime)}>
+              Select Start Time
+            </Text>
+          </View>
+          <DateTimePicker value={date} mode="time" display="spinner" onChange={onDateChange} />
+          <View style={themed($dividerBottom)}></View>
+          <View style={themed($bottomSheetButton)}>
+            <Button text="Next" style={themed($tapButton)} preset="reversed" onPress={hoursClick} />
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
+      <BottomSheet
+        enablePanDownToClose
+        ref={hoursSheetRef}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        index={-1}
+      >
+        <BottomSheetView>
+          <View>
+            <Text preset="subheading" style={themed($headerTime)}>
+              Review
+            </Text>
+          </View>
+          <DateTimePicker value={date} mode="time" display="spinner" onChange={onDateChange} />
+          <View style={themed($dividerBottom)}></View>
+          <View style={themed($bottomSheetButton)}>
+            <Button
+              text="Create Booking"
+              style={themed($tapButton)}
+              preset="reversed"
+              onPress={createBooking}
+            />
+          </View>
+        </BottomSheetView>
+      </BottomSheet>
     </Screen>
   )
 }
+
 const $container: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.neutral100,
   flex: 1,
@@ -92,20 +254,17 @@ const $headerContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.md,
   marginLeft: spacing.lg,
   marginRight: spacing.lg,
-  display: "flex",
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
 })
 
 const $buttonBackContainer: ThemedStyle<ViewStyle> = () => ({
-  display: "flex",
   flexDirection: "row",
   alignItems: "center",
 })
 
 const $walletContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
-  display: "flex",
   flexDirection: "row",
   alignItems: "center",
   backgroundColor: colors.palette.wallet,
@@ -113,7 +272,7 @@ const $walletContainer: ThemedStyle<ViewStyle> = ({ spacing, colors }) => ({
   borderRadius: spacing.lg,
 })
 
-const $title: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $title: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginLeft: spacing.sm,
 })
 
@@ -124,16 +283,10 @@ const $divider: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   marginBottom: spacing.md,
 })
 
-const $contentContainer: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  textAlign: "center",
-  marginTop: spacing.md,
-})
-
-const $card: ThemedStyle<ViewStyle> = () => ({
-  position: "relative",
-  borderRadius: 10,
+const $card: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  borderRadius: spacing.md,
   overflow: "hidden",
-  marginBottom: 10,
+  marginBottom: spacing.md,
 })
 
 const $image: ThemedStyle<ImageStyle> = () => ({
@@ -141,29 +294,74 @@ const $image: ThemedStyle<ImageStyle> = () => ({
   height: 180,
 })
 
-const $overlay: ThemedStyle<ViewStyle> = () => ({
+const $contentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginHorizontal: spacing.lg,
+})
+
+const $emptyContent: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  textAlign: "center",
+  marginTop: spacing.md,
+})
+
+const $overlay: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  flex: 1,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
   position: "absolute",
   bottom: 0,
   left: 0,
   right: 0,
-  padding: 10,
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  padding: spacing.sm,
 })
 
-const $icon: ThemedStyle<ViewStyle> = () => ({
-  fontSize: 24,
-  color: "white",
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
+const $titleImageContainer: ThemedStyle<TextStyle> = () => ({
+  flex: 1,
+  flexDirection: "row",
 })
 
-const $titleImage: ThemedStyle<ViewStyle> = () => ({
+const $icon: ThemedStyle<TextStyle> = () => ({
   fontSize: 24,
   color: "white",
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
 })
 
-const $price: ThemedStyle<ViewStyle> = () => ({
-  fontSize: 24,
-  color: "white",
-  backgroundColor: "rgba(0, 0, 0, 0.5)",
+const $titleImage: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
+  color: colors.palette.neutral100,
+  marginLeft: spacing.sm,
+})
+
+const $price: ThemedStyle<TextStyle> = ({ colors }) => ({
+  color: colors.palette.neutral100,
+})
+const $bottomSheetContent: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  padding: spacing.md,
+  marginHorizontal: spacing.md,
+  // alignItems: "center",
+})
+
+const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  marginTop: spacing.xs,
+})
+
+const $dividerBottom: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  backgroundColor: colors.palette.neutral300,
+  height: 1,
+  marginTop: spacing.md,
+  marginBottom: spacing.md,
+})
+
+const $bottomSheetHeader: ThemedStyle<ImageStyle> = ({ spacing }) => ({
+  display: "flex",
+  flexDirection: "row",
+  marginBottom: spacing.md,
+})
+const $bottomSheetButton: ThemedStyle<ImageStyle> = ({ spacing }) => ({
+  marginBottom: spacing.md,
+  marginHorizontal: spacing.md,
+})
+const $bottomSheetName: ThemedStyle<ImageStyle> = ({ spacing }) => ({
+  marginLeft: spacing.md,
+})
+const $headerTime: ThemedStyle<TextStyle> = ({ spacing }) => ({
+  textAlign: "center",
 })

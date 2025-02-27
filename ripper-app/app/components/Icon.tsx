@@ -115,6 +115,10 @@ export const iconRegistry = {
   coach: require("../../assets/icons/user-octagon.png"),
   vector: require("../../assets/icons/vector.png"),
   wallet: require("../../assets/icons/empty-wallet.png"),
+  yoga: require("../../assets/icons/yoga.png"),
+  acrobatics: require("../../assets/icons/acrobatics.png"),
+  archery: require("../../assets/icons/archery.png"),
+  dance: require("../../assets/icons/dance.png"),
 }
 
 const $imageStyleBase: ImageStyle = {
