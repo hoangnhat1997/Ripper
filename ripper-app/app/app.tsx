@@ -109,7 +109,7 @@ export function App() {
 
   // otherwise, we're ready to render the app
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView>
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <ErrorBoundary catchErrors={Config.catchErrors}>
           <KeyboardProvider>

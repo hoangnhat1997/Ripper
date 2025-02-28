@@ -39,6 +39,8 @@ const palette = {
 
   wallet: "#FFD0B0",
   backgroundTab: "#FAFAFA",
+
+  surfaceDetele: "#FEEBED",
 } as const
 
 export const colors = {

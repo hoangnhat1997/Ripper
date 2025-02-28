@@ -14,7 +14,7 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import { useStores } from "../models"
 import { type ThemedStyle } from "@/theme"
 import { activities } from "../../test/mockFile"
-import BottomSheet, { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet"
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import { use } from "i18next"
 
@@ -83,7 +83,6 @@ export const HomeScreen: FC<DemoTabScreenProps<"Home">> = function DemoCommunity
 
   const createBooking = () => {
     createBookingSheetRef.current?.close()
-    console.log("createBooking")
   }
 
   const ActivityCard = ({ id, title, price, image, icon }: activitiesProps) => (
@@ -218,7 +217,7 @@ Be the first coach to create one!"
       </BottomSheet>
       <BottomSheet
         enablePanDownToClose
-        ref={hoursSheetRef}
+        ref={createBookingSheetRef}
         snapPoints={snapPoints}
         onChange={handleSheetChanges}
         index={-1}
@@ -229,7 +228,32 @@ Be the first coach to create one!"
               Review
             </Text>
           </View>
-          <DateTimePicker value={date} mode="time" display="spinner" onChange={onDateChange} />
+          <View style={themed($reviewContainer)}>
+            <Text text="Sport" weight="bold" size="md" />
+            <Icon icon={selectedItem.icon} size={24} color="orange" style={themed($reviewText)} />
+            <Text
+              text={selectedItem.title}
+              weight="normal"
+              size="md"
+              style={themed($bottomSheetName)}
+            />
+          </View>
+          <View style={themed($reviewContainer)}>
+            <Text text="Coach" weight="bold" size="md" />
+            <Text text="Ayah Green" weight="normal" size="md" style={themed($reviewText)} />
+          </View>
+          <View style={themed($reviewContainer)}>
+            <Text text="Date" weight="bold" size="md" />
+            <Text text="01/03/2025" weight="normal" size="md" style={themed($reviewText)} />
+          </View>
+          <View style={themed($reviewContainer)}>
+            <Text text="Time" weight="bold" size="md" />
+            <Text text="15:00 - 16:30" weight="normal" size="md" style={themed($reviewText)} />
+          </View>
+          <View style={themed($reviewContainer)}>
+            <Text text="Price" weight="bold" size="md" />
+            <Text text={selectedItem.price} weight="bold" size="xl" style={themed($reviewText)} />
+          </View>
           <View style={themed($dividerBottom)}></View>
           <View style={themed($bottomSheetButton)}>
             <Button
@@ -364,4 +388,15 @@ const $bottomSheetName: ThemedStyle<ImageStyle> = ({ spacing }) => ({
 })
 const $headerTime: ThemedStyle<TextStyle> = ({ spacing }) => ({
   textAlign: "center",
+})
+
+const $reviewContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  marginHorizontal: spacing.md,
+})
+
+const $reviewText: ThemedStyle<ImageStyle> = ({ spacing }) => ({
+  marginLeft: spacing.xl,
 })
