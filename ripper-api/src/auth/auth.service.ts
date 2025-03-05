@@ -12,17 +12,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserRepository) private userRepository: UserRepository,
+    private userRepository: UserRepository,
     private jwtService: JwtService,
   ) {}
   async signUp(signUpDto: SignUpDto): Promise<void> {
     const { email } = signUpDto;
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOneUser(email);
 
     if (user) {
       throw new ConflictException('User already exists');
     }
 
-    this.userRepository.create(signUpDto);
+    await this.userRepository.createUser(signUpDto);
   }
 }
