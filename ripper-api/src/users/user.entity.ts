@@ -17,7 +17,7 @@ export class User extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: false })
   email: string;
 
   @Column()
@@ -32,7 +32,7 @@ export class User extends BaseEntity {
   @BeforeInsert()
   async hashPassword() {
     this.salt = await bcrypt.genSalt();
-    this.password = this.hash(this.password);
+    this.password = await this.hash(this.password);
   }
 
   async validatePassword(password: string): Promise<boolean> {
@@ -40,7 +40,7 @@ export class User extends BaseEntity {
     return hash === this.password;
   }
 
-  private hash(password: string): string {
+  private async hash(password: string): Promise<string> {
     return bcrypt.hash(password, this.salt);
   }
 }

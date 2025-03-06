@@ -4,25 +4,46 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 import { SignUpDto } from './dto/sign-up.dto';
-import { UserRepository } from 'src/users/user.repository';
-import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userRepository: UserRepository,
+    private userService: UsersService,
     private jwtService: JwtService,
   ) {}
   async signUp(signUpDto: SignUpDto): Promise<void> {
-    const { email } = signUpDto;
-    const user = await this.userRepository.findOneUser(email);
+    if (!signUpDto.email) {
+      throw new Error('Email is required');
+    }
+    const user = await this.userService.findOneUser(signUpDto.email);
 
     if (user) {
       throw new ConflictException('User already exists');
     }
 
-    await this.userRepository.createUser(signUpDto);
+    await this.userService.createUser(signUpDto);
+  }
+
+  async signIn(signInDto: any): Promise<string> {
+    const { email, password } = signInDto;
+
+    const user = await this.userService.findOneUser(email);
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const payload = { email: user.email };
+    return this.jwtService.sign(payload);
   }
 }

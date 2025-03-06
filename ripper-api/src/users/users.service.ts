@@ -5,7 +5,7 @@ import { User } from './user.entity';
 import { SignUpDto } from '../auth/dto/sign-up.dto';
 import { AuthCredentialsDto } from '../auth/dto/auth-credentials.dto';
 
-export class UserRepository {
+export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,

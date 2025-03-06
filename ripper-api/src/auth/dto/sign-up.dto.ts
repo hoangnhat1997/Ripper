@@ -4,6 +4,7 @@ import {
   MaxLength,
   Matches,
   IsEmail,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class SignUpDto {
@@ -13,6 +14,7 @@ export class SignUpDto {
   name: string;
 
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
