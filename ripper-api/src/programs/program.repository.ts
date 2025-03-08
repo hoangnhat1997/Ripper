@@ -1,9 +1,14 @@
-import { Repository, EntityRepository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import { Program } from './program.entity';
 import { User } from '../users/user.entity';
 
-@EntityRepository(Program)
+@Injectable()
 export class ProgramRepository extends Repository<Program> {
+  constructor(private dataSource: DataSource) {
+    super(Program, dataSource.createEntityManager());
+  }
+
   async createProgram(
     sport: string,
     hourlyRate: number,

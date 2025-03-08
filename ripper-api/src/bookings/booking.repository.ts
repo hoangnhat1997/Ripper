@@ -1,9 +1,10 @@
-import { Repository, EntityRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Booking } from './booking.entity';
 import { User } from '../users/user.entity';
 import { Program } from '../programs/program.entity';
+import { Injectable } from '@nestjs/common';
 
-@EntityRepository(Booking)
+@Injectable()
 export class BookingRepository extends Repository<Booking> {
   async createBooking(
     trainee: User,
