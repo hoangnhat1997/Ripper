@@ -7,12 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { ProgramsModule } from './programs/programs.module';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -23,6 +26,16 @@ import { ProgramsModule } from './programs/programs.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    JwtModule.registerAsync({
+      global: true,
+      useFactory: async () => ({
+        secret: process.env.JWT_SECRET,
+        signOptions: {
+          expiresIn: process.env.JWT_EXPIRED,
+        },
+      }),
+    }),
+    PassportModule,
     AuthModule,
     UsersModule,
     ProgramsModule,

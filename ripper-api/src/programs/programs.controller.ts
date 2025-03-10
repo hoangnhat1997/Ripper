@@ -15,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../users/user.entity';
 import { Program } from './program.entity';
+import JwtAuthGuard from 'src/auth/jwt-auth.guard';
 
 @Controller('programs')
 export class ProgramsController {
