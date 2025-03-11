@@ -22,7 +22,7 @@ export class ProgramsController {
   constructor(private programsService: ProgramsService) {}
 
   @Post()
-  @UseGuards(AuthGuard())
+  @UseGuards(JwtAuthGuard)
   createProgram(
     @Body() createProgramDto: CreateProgramDto,
     @GetUser() user: User,

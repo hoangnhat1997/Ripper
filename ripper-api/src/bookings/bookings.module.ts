@@ -7,6 +7,7 @@ import { ProgramsModule } from '../programs/programs.module';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { Booking } from './booking.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { Booking } from './booking.entity';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ProgramsModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [BookingsController],
   providers: [BookingsService, BookingRepository],

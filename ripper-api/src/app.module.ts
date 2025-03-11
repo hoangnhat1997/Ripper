@@ -26,16 +26,6 @@ import { PassportModule } from '@nestjs/passport';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    JwtModule.registerAsync({
-      global: true,
-      useFactory: async () => ({
-        secret: process.env.JWT_SECRET,
-        signOptions: {
-          expiresIn: process.env.JWT_EXPIRED,
-        },
-      }),
-    }),
-    PassportModule,
     AuthModule,
     UsersModule,
     ProgramsModule,
