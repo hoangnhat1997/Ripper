@@ -35,6 +35,8 @@ const palette = {
   overlay50: "rgba(25, 16, 21, 0.5)",
 
   ripper: "#FF8C40",
+  blurRipper: "#fff0e6",
+
   blue: "#057ED9",
 
   wallet: "#FFD0B0",

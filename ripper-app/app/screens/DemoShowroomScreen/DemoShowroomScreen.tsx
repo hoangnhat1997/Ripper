@@ -15,6 +15,7 @@ import SectionListWithKeyboardAwareScrollView from "./SectionListWithKeyboardAwa
 import { useAppTheme } from "@/utils/useAppTheme"
 
 const logo = require("../../../assets/images/logo.png")
+const logoMobile = require("../../../assets/images/logo-mobile.png")
 
 export interface Demo {
   name: string
@@ -164,7 +165,7 @@ export const DemoShowroomScreen: FC<DemoTabScreenProps<"DemoShowroom">> =
         renderDrawerContent={() => (
           <View style={themed([$drawer, $drawerInsets])}>
             <View style={themed($logoContainer)}>
-              <Image source={logo} style={$logoImage} />
+              <Image source={logoMobile} style={$logoImage} />
             </View>
             <ListView<DemoListItem["item"]>
               ref={menuRef}

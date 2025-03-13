@@ -120,6 +120,8 @@ export const iconRegistry = {
   archery: require("../../assets/icons/archery.png"),
   dance: require("../../assets/icons/dance.png"),
   trash: require("../../assets/icons/delete.png"),
+  edit: require("../../assets/icons/edit.png"),
+  plus: require("../../assets/icons/plus.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

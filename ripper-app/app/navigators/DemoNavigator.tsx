@@ -3,18 +3,10 @@ import { CompositeScreenProps } from "@react-navigation/native"
 import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
-import {
-  HomeScreen,
-  BookingScreen,
-  CoachScreen,
-  DemoDebugScreen,
-  DemoCommunityScreen,
-} from "../screens"
+import { HomeScreen, BookingScreen, CoachScreen } from "../screens"
 import type { ThemedStyle } from "@/theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 import { useAppTheme } from "@/utils/useAppTheme"
-import { DemoPodcastListScreen } from "@/screens/DemoPodcastListScreen"
-import { translate } from "@/i18n"
 
 export type DemoTabParamList = {
   DemoCommunity: undefined
@@ -108,7 +100,7 @@ export function DemoNavigator() {
         }}
       /> */}
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="DemoPodcastList"
         component={DemoPodcastListScreen}
         options={{
@@ -118,7 +110,7 @@ export function DemoNavigator() {
             <Icon icon="podcast" color={focused ? colors.tint : colors.tintInactive} size={30} />
           ),
         }}
-      />
+      /> */}
 
       {/* <Tab.Screen
         name="DemoDebug"

@@ -74,6 +74,43 @@ export class Api {
       return { kind: "bad-data" }
     }
   }
+
+  async signUp(
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<{ kind: "ok" } | GeneralApiProblem> {
+    const response: ApiResponse<any> = await this.apisauce.post("/auth/signup", {
+      name,
+      email,
+      password,
+    })
+
+    console.log("response", response.ok)
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+    }
+
+    return { kind: "ok" }
+  }
+  async logIn(
+    email: string,
+    password: string,
+  ): Promise<{ kind: "ok"; response: string } | GeneralApiProblem> {
+    const response: ApiResponse<any> = await this.apisauce.post("/auth/signin", {
+      email,
+      password,
+    })
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+    }
+
+    return { kind: "ok", response: response.data }
+  }
 }
 
 // Singleton instance of the API for convenience

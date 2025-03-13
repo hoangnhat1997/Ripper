@@ -6,6 +6,7 @@ import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { api } from "../services/api"
 
 interface SignUpScreenProps extends AppStackScreenProps<"SignUp"> {}
 
@@ -20,7 +21,7 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
+    authenticationStore: { authEmail, setAuthEmail, validationError },
   } = useStores()
 
   const {
@@ -51,7 +52,28 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
 
   const error = isSubmitted ? validationError : ""
 
-  function signup() {
+  const signup = async () => {
+    // write call api to sign up
+
+    if (!authFullName || !authEmail || !authPassword) {
+      return
+    }
+    await api
+      .signUp(authFullName, authEmail, authPassword)
+      .then((res) => {
+        if (res.kind !== "ok") {
+          return
+        }
+        setIsSubmitted(false)
+        setAuthPassword("")
+        setAuthEmail("")
+
+        goLogin()
+      })
+      .catch((error) => {
+        console.log("Error signing up", error)
+      })
+
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
 
@@ -59,12 +81,9 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
 
     // Make a request to your server to get an authentication token.
     // If successful, reset the fields and set the token.
-    setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
 
     // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+    // setAuthToken(String(Date.now()))
   }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
@@ -107,6 +126,7 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
         onChangeText={setAuthFullName}
         containerStyle={themed($textField)}
         autoCapitalize="none"
+        autoComplete="name"
         autoCorrect={false}
         labelTx="signUpScreen:fullNameLabel"
         placeholderTx="signUpScreen:fullNamePlaceholder"

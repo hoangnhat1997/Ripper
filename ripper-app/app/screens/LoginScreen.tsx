@@ -6,6 +6,7 @@ import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import type { ThemedStyle } from "@/theme"
 import { useAppTheme } from "@/utils/useAppTheme"
+import { api } from "@/services/api"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -36,8 +37,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
+    setAuthEmail("")
+    setAuthPassword("")
 
     // Return a "cleanup" function that React will run when the component unmounts
     return () => {
@@ -48,11 +49,27 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const error = isSubmitted ? validationError : ""
 
-  function login() {
+  const login = async () => {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
 
     if (validationError) return
+
+    await api
+      .logIn(authEmail, authPassword)
+      .then((res) => {
+        if (res.kind !== "ok") {
+          return
+        }
+        setIsSubmitted(false)
+        setAuthPassword("")
+        setAuthEmail("")
+
+        setAuthToken(res.response)
+      })
+      .catch((error) => {
+        console.log("Error signing up", error)
+      })
 
     // Make a request to your server to get an authentication token.
     // If successful, reset the fields and set the token.
@@ -61,7 +78,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     setAuthEmail("")
 
     // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+    // setAuthToken(String(Date.now()))
   }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
